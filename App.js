@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity,TextInput, ScrollView, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity,TextInput, ScrollView, Alert, Platform } from 'react-native';
 import {theme} from './colors';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Entypo,AntDesign,Feather } from '@expo/vector-icons';
@@ -39,7 +39,9 @@ const loadWorking = async () => {
   try{
     const s = await AsyncStorage?.getItem(STORAGE_KEY_WORKING);
     console.log('AsyncStorage?.getItem(STORAGE_KEY_WORKING): ' + JSON.parse(s));
-    setWorking(JSON.parse(s?.toLowerCase()));
+    if(s){
+      setWorking(JSON.parse(s?.toLowerCase()));
+    }
   } catch(e) {
     console.log(e);
   }
@@ -52,7 +54,9 @@ const saveToDos = async (toSave) => {
 const loadToDos = async () => {
   try{
     const s = await AsyncStorage.getItem(STORAGE_KEY);
-    setToDos(JSON.parse(s));
+    if(s) {
+      setToDos(JSON.parse(s));
+    }
   } catch(e) {
     console.log(e);
   }
@@ -92,6 +96,18 @@ const completedToDos = async (key) => {
 };
 
 const deleteToDos = async (key) => {
+  if(Platform.OS === "web") {
+    const ok = confirm("Do you want to delete To Do ?");
+    if(ok) {
+      const newToDos = {
+        ...toDos
+      };
+      delete newToDos[key];
+      //Save todo
+      setToDos(newToDos);
+      await saveToDos(newToDos);
+    }
+  }
   Alert.alert("Delete To DO","Are you sure?",[
     {text:"Cancel",style:"destructive"},
     {text:"I'm Sure", onPress: async () => {
@@ -131,8 +147,8 @@ const addToDo = async ()=> {
     <View style={styles.container}>
       <StatusBar style="auto"/>
       <View style={styles.header}>
-        <TouchableOpacity onPress={work}><Text style={{...styles.btnText, color: working ? "white" : theme.grey }}>Work</Text></TouchableOpacity>
-        <TouchableOpacity onPress={travel}><Text style={{...styles.btnText, color: !working ? "white" : theme.grey}}>Travel</Text></TouchableOpacity>
+        <TouchableOpacity onPress={work}><Text style={{fontSize:38, fontWeight:"600", color: working ? "white" : theme.grey }}>Work</Text></TouchableOpacity>
+        <TouchableOpacity onPress={travel}><Text style={{fontSize:38, fontWeight:"600", color: !working ? "white" : theme.grey}}>Travel</Text></TouchableOpacity>
       </View>
       <TextInput onSubmitEditing={addToDo} returnKeyType="done" style={styles.input} placeholder={working ? "Add a To Do" : "Where do you want to go?"} placeholderTextColor={"grey"} value={text} onChangeText={onChangeText}></TextInput>
       <ScrollView>
@@ -164,10 +180,6 @@ const styles = StyleSheet.create({
   header: {justifyContent:"space-between",
     flexDirection:"row",
     marginTop:100,
-  },
-  btnText:{
-    fontSize:38,
-    fontWeight:"600"
   },
   input:{
     backgroundColor:"white",
