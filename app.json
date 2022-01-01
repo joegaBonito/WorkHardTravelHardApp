@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Workd Hard Travel Hard To Do App",
-    "slug": "workdhardtravelhardtodoapp",
+    "name": "Work Hard Travel Hard To Do App",
+    "slug": "workhardtravelhardtodoapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,6 +28,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": ""
+    "description": "",
+    "githubUrl": "https://github.com/joegaBonito/WorkHardTravelHardApp"
   }
 }
